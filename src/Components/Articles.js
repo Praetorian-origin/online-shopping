@@ -1,7 +1,9 @@
 import React from "react";
 import Article from "./Article";
 
-const Articles = ({ articles }) => {
+const Articles = ({ articles, removeArticle }) => {
+
+
   return (
     <div>
       {articles.map((article) => (
@@ -9,6 +11,7 @@ const Articles = ({ articles }) => {
           <Article
            article={article}
           />
+          <button onClick={() => removeArticle(article)}>Delete</button>
         </div>
       ))}
     </div>
