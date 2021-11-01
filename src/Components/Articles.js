@@ -7,9 +7,7 @@ const Articles = ({ articles }) => {
       {articles.map((article) => (
         <div key={article.id}>
           <Article
-            name={article.name}
-            descr={article.descr}
-            stock={article.stock}
+           article={article}
           />
         </div>
       ))}

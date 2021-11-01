@@ -1,14 +1,12 @@
 import React from "react";
 
-const Article = ({ name, descr, stock }) => {
+const Article = ({ article }) => {
 
-    console.log("i'm called")
-    console.log(name)
   return (
     <div>
-      <div>{name}</div>
-      <div>{descr}</div>
-      <div>{stock}</div>
+      <div>{article.name}</div>
+      <div>{article.descr}</div>
+      <div>{article.stock}</div>
     </div>
   );
 };
