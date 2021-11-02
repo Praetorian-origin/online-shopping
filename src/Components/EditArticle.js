@@ -1,25 +1,39 @@
-import React, {  useState } from "react";
-import articleService from "../Services/articles";
+import React, {  useEffect, useState } from "react";
 import ArticleForm from "./ArticleForm";
-import { useHistory} from 'react-router-dom';
+import { useHistory, useRouteMatch} from 'react-router-dom';
+import { useSelector, useDispatch } from "react-redux";
+import { updateArticle } from "../Reducers/articleReducer";
+import { setErrorMessage, setSuccessMessage } from "../Reducers/notificationReducer";
 
-const EditArticle = ({ article, setNotificationMessage, handleEditArticle }) => {
-  const [name, setName] = useState(article.name);
-  const [stock, setStock] = useState(article.stock);
-  const [descr, setDescr] = useState(article.descr);
-
+const EditArticle = () => {
+  const dispatch = useDispatch();
   const history = useHistory();
+  const [name, setName] = useState('');
+  const [stock, setStock] = useState('');
+  const [descr, setDescr] = useState('');
+
+  const idOfArticleToEdit = useRouteMatch("/articles/edit/:id").params.id;
+  const articles = useSelector(state => state.articlesStore);
+  const article = articles.find((article) => article.id === idOfArticleToEdit);
+
+
+  useEffect(() => {
+    setName(article.name);
+    setStock(article.stock);
+    setDescr(article.descr);
+  }, [article])
+
 
   const modifyArticle = async (e) => {
     e.preventDefault();
     try {
-      const updatedArticle = await articleService.update(article.id, { name, stock, descr });
-      handleEditArticle(updatedArticle);
-      setNotificationMessage("Article updated", false);
-      history.push('/articles/')
-    } catch (exception) {
-      setNotificationMessage(exception, true);
+      dispatch(updateArticle({id: article.id, name, stock, descr}));
+      history.push('/articles'); 
+      dispatch(setSuccessMessage('Article created'));
+    } catch(exception) {
+      dispatch(setErrorMessage(exception))
     }
+  
   };
 
   return (

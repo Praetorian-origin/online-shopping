@@ -1,69 +1,27 @@
 import React, { useEffect, useState } from "react";
-import { Link, Switch, Route, Redirect, useRouteMatch } from "react-router-dom";
-import Article from "./Components/Article";
+import { Link, Switch, Route, Redirect } from "react-router-dom";
 import Articles from "./Components/Articles";
 import Login from "./Components/Login";
 import Users from "./Components/Users";
 import Home from "./Components/Home";
-import articleService from "./Services/articles";
 import NotFoundView from "./Components/NotFoundView";
 import Notification from "./Components/Notification";
 import AddArticle from "./Components/AddArticle";
 import EditArticle from "./Components/EditArticle";
+import { useSelector, useDispatch } from "react-redux";
+import { initializeArticles } from "./Reducers/articleReducer";
+import { setIsDone } from "./Reducers/loadReducer";
 
 const App = () => {
-  //user state stays there because it's central
-  const [articles, setArticles] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [message, setMessage] = useState("");
-  const [isError, setIsError] = useState(null);
-
   const [user, setUser] = useState(null);
 
+  const dispatch = useDispatch();
+  const isLoading = useSelector((state) => state.isLoading);
+
   useEffect(() => {
-    async function fetchData() {
-      const articlesData = await articleService.getAll();
-      setArticles(articlesData);
-      setIsLoading(false);
-    }
-    fetchData();
-  }, []);
-
-  const setNotificationMessage = (message, isError) => {
-    setMessage(message);
-    setIsError(isError);
-    setTimeout(() => setMessage(""), 5000);
-  };
-
-  const handleEditArticle = (articleToUpdate) => {
-    setArticles(
-      articles.map((article) =>
-        article.id === articleToUpdate.id ? articleToUpdate : article
-      )
-    );
-  };
-
-  const removeArticle = (articleToRemove) => {
-    try {
-      articleService.remove(articleToRemove.id);
-      setArticles(
-        articles.filter((article) => article.id !== articleToRemove.id)
-      );
-    } catch (exception) {
-      setNotificationMessage(exception, true);
-    }
-  };
-
-  let article;
-  const matchGetByArticleID = useRouteMatch("/articles/:id");
-  article = matchGetByArticleID
-    ? articles.find((article) => article.id === matchGetByArticleID.params.id)
-    : null;
-
-  const matchEditByArticleID = useRouteMatch("/articles/edit/:id");
-  article = matchEditByArticleID
-    ? articles.find((article) => article.id === matchEditByArticleID.params.id)
-    : null;
+    dispatch(initializeArticles());
+    dispatch(setIsDone());
+  }, [dispatch]);
 
   const login = (user) => {
     setUser(user);
@@ -72,7 +30,7 @@ const App = () => {
   if (isLoading === false) {
     return (
       <div>
-        <Notification message={message} isError={isError} />
+        <Notification />
         <div>
           <Link to="/">home</Link>
           <Link to="/articles">Articles</Link>
@@ -83,22 +41,14 @@ const App = () => {
 
         <Switch>
           <Route path="/articles/new" exact={true}>
-            <AddArticle setNotificationMessage={setNotificationMessage} />
+            <AddArticle />
           </Route>
           <Route path="/articles" exact={true}>
-            <Articles articles={articles} removeArticle={removeArticle} />
+            <Articles />
           </Route>
           <Route path="/articles/edit/:id" exact={true}>
-            <EditArticle
-              article={article}
-              setNotificationMessage={setNotificationMessage}
-              handleEditArticle={handleEditArticle}
-            />
+            <EditArticle />
           </Route>
-          <Route path="/articles/:id" exact={true}>
-            <Article article={article} />
-          </Route>
-
           <Route path="/users" exact={true}>
             {user ? <Users /> : <Redirect to="/login" />}
           </Route>

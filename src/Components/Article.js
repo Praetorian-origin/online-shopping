@@ -1,5 +1,8 @@
 import React from "react";
-import { useHistory} from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
+
+
+// make button or click area to get access to more details about article // there load more details 
 const Article = ({ article }) => {
   const history = useHistory();
   return (

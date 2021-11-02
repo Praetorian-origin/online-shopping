@@ -1,11 +1,14 @@
 import React, { useState } from "react";
-import articleService from "../Services/articles";
 import ArticleForm from "./ArticleForm";
+import { useDispatch } from "react-redux";
+import { createArticle } from "../Reducers/articleReducer";
+import { setErrorMessage, setSuccessMessage } from "../Reducers/notificationReducer";
 
-const AddArticle = ({ setNotificationMessage }) => {
+const AddArticle = () => {
   const [name, setName] = useState("");
   const [stock, setStock] = useState("");
   const [descr, setDescr] = useState("");
+  const dispatch = useDispatch();
 
   const stateCleanUp = () => {
     setName("");
@@ -13,15 +16,16 @@ const AddArticle = ({ setNotificationMessage }) => {
     setDescr("");
   };
 
-  const createArticle = async (e) => {
+  const addArticle = async (e) => {
     e.preventDefault();
     try {
-      articleService.create({ name, stock, descr });
+      dispatch(createArticle({ name, stock, descr }));
       stateCleanUp();
-      setNotificationMessage("Article created", false);
-    } catch (exception) {
-      setNotificationMessage(exception, true);
+      dispatch(setSuccessMessage('Article created'));
+    } catch(exception) {
+      setErrorMessage('Error ' + exception);
     }
+ 
   };
 
   return (
@@ -34,8 +38,8 @@ const AddArticle = ({ setNotificationMessage }) => {
         setName={setName}
         setStock={setStock}
         setDescr={setDescr}
-        submitMethod={createArticle}
-        buttonText='Add Article'
+        submitMethod={addArticle}
+        buttonText="Add Article"
       />
     </div>
   );

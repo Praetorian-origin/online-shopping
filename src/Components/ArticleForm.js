@@ -1,9 +1,5 @@
 import React from "react";
 
-
-
-// l'idée cest de créer un formulaire qui reçoit les states et la méthode submit pour déterminer
-// s'il s'agit d'une update ou d'une insertion
 const ArticleForm = ({name, stock, descr, setName, setStock, setDescr, submitMethod,
 buttonText}) => {
 
